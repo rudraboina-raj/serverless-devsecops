@@ -1,6 +1,5 @@
 import json
 import base64
-import traceback
 import logging
 
 from flask import Blueprint, request, jsonify
