@@ -11,7 +11,6 @@ from ..schemas.employee_schema import (
     EmployeeResponseSchema,
 )
 
-
 employee_bp = Blueprint("employee", __name__)
 
 
@@ -47,37 +46,27 @@ def create_employee():
             salary=data["salary"],
         )
 
-        return jsonify(
-            {
-                "message": "Employee created successfully",
-                "employee_id": employee.employee_id,
-            }
-        ), 201
+        return (
+            jsonify(
+                {
+                    "message": "Employee created successfully",
+                    "employee_id": employee.employee_id,
+                }
+            ),
+            201,
+        )
 
     except ValidationError as err:
 
-        return jsonify(
-            {
-                "errors": err.messages
-            }
-        ), 400
+        return jsonify({"errors": err.messages}), 400
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 400
+        return jsonify({"error": str(e)}), 400
 
     except Exception as e:
 
-        return jsonify(
-            {
-                "error": "Internal Server Error",
-                "details": str(e)
-            }
-        ), 500
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
     finally:
 
@@ -106,18 +95,11 @@ def get_employees():
 
         response_schema = EmployeeResponseSchema(many=True)
 
-        return jsonify(
-            response_schema.dump(employees)
-        ), 200
+        return jsonify(response_schema.dump(employees)), 200
 
     except Exception as e:
 
-        return jsonify(
-            {
-                "error": "Internal Server Error",
-                "details": str(e)
-            }
-        ), 500
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
     finally:
 
@@ -145,17 +127,11 @@ def get_employee(employee_id):
 
         response_schema = EmployeeResponseSchema()
 
-        return jsonify(
-            response_schema.dump(employee)
-        ), 200
+        return jsonify(response_schema.dump(employee)), 200
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 404
+        return jsonify({"error": str(e)}), 404
 
     finally:
 
@@ -185,20 +161,19 @@ def update_employee(employee_id):
             salary=data["salary"],
         )
 
-        return jsonify(
-            {
-                "message": "Employee updated successfully",
-                "employee_id": employee.employee_id,
-            }
-        ), 200
+        return (
+            jsonify(
+                {
+                    "message": "Employee updated successfully",
+                    "employee_id": employee.employee_id,
+                }
+            ),
+            200,
+        )
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 404
+        return jsonify({"error": str(e)}), 404
 
     finally:
 
@@ -221,19 +196,11 @@ def delete_employee(employee_id):
 
         service.delete_employee(employee_id)
 
-        return jsonify(
-            {
-                "message": "Employee deleted successfully"
-            }
-        ), 200
+        return jsonify({"message": "Employee deleted successfully"}), 200
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 404
+        return jsonify({"error": str(e)}), 404
 
     finally:
 

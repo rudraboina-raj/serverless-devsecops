@@ -17,17 +17,11 @@ class PubSubPublisher:
         Publish JSON message to Pub/Sub
         """
 
-        topic_path = self.publisher.topic_path(
-            self.project_id,
-            topic_name
-        )
+        topic_path = self.publisher.topic_path(self.project_id, topic_name)
 
         data = json.dumps(message).encode("utf-8")
 
-        future = self.publisher.publish(
-            topic_path,
-            data=data
-        )
+        future = self.publisher.publish(topic_path, data=data)
 
         message_id = future.result()
 

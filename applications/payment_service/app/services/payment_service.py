@@ -5,7 +5,9 @@ from shared.pubsub.publisher import PubSubPublisher
 
 from applications.payment_service.app.events.payment_event import PaymentEvent
 from applications.payment_service.app.models.payment import Payment
-from applications.payment_service.app.repository.payment_repository import PaymentRepository
+from applications.payment_service.app.repository.payment_repository import (
+    PaymentRepository,
+)
 
 
 class PaymentService:
@@ -17,17 +19,11 @@ class PaymentService:
     def create_payment(db, data):
 
         payment = Payment(
-
             payment_id=str(uuid.uuid4()),
-
             order_id=data["order_id"],
-
             amount=data["amount"],
-
             payment_method=data["payment_method"],
-
             status="SUCCESS",
-
         )
 
         # Save payment
@@ -37,10 +33,7 @@ class PaymentService:
         event = PaymentEvent.build(payment)
 
         # Publish event
-        PaymentService.publisher.publish(
-            Settings.PAYMENT_EVENTS_TOPIC,
-            event
-        )
+        PaymentService.publisher.publish(Settings.PAYMENT_EVENTS_TOPIC, event)
 
         return payment
 

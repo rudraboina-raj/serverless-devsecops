@@ -34,7 +34,7 @@ database_name = "appdb"
 
 db_username = "appuser"
 
-db_password = "Welcome@123"
+db_password = "<SET_IN_GITHUB_SECRET>"
 
 # -------------------------------------------------------
 # Cloud Run - Employee Service
@@ -66,7 +66,7 @@ notification_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/se
 
 smtp_email = "rudraboina0435@gmail.com"
 
-smtp_password = "xpmhxrixfahovdkz"
+smtp_password = "<SET_IN_GITHUB_SECRET>"
 
 smtp_server = "smtp.gmail.com"
 

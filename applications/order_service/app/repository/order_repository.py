@@ -19,11 +19,7 @@ class OrderRepository:
     @staticmethod
     def get_by_id(db: Session, order_id: str):
 
-        return (
-            db.query(Order)
-            .filter(Order.order_id == order_id)
-            .first()
-        )
+        return db.query(Order).filter(Order.order_id == order_id).first()
 
     @staticmethod
     def get_all(db: Session):

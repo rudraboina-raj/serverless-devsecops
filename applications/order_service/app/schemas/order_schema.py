@@ -3,12 +3,7 @@ class OrderRequest:
     @staticmethod
     def validate(data):
 
-        required_fields = [
-            "employee_id",
-            "product_id",
-            "quantity",
-            "total_price"
-        ]
+        required_fields = ["employee_id", "product_id", "quantity", "total_price"]
 
         for field in required_fields:
 

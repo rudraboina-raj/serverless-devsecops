@@ -336,9 +336,8 @@ module "order_cloud_run" {
   project_id = var.project_id
   region     = var.region
 
-  service_name = "order-service"
-
-  image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/order-service:v1"
+  service_name = var.order_service_name
+  image        = var.order_service_image
 
   container_port = 8080
 

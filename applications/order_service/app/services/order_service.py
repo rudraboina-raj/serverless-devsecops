@@ -16,19 +16,12 @@ class OrderService:
         OrderRequest.validate(data)
 
         order = Order(
-
             order_id=str(uuid.uuid4()),
-
             employee_id=data["employee_id"],
-
             product_id=data["product_id"],
-
             quantity=data["quantity"],
-
             total_price=data["total_price"],
-
             status="CREATED",
-
         )
 
         saved_order = OrderRepository.create(db, order)

@@ -71,7 +71,7 @@ variable "db_password" {
 }
 
 # -------------------------------------------------------
-# Employee Cloud Run Service
+# Employee Service
 # -------------------------------------------------------
 
 variable "employee_service_name" {
@@ -86,68 +86,88 @@ variable "employee_service_image" {
 }
 
 variable "employee_service_account_id" {
-  description = "Employee Cloud Run Service Account ID"
+  description = "Employee Service Account ID"
   type        = string
   default     = "employee-service-sa"
 }
 
 variable "employee_service_account_name" {
-  description = "Employee Cloud Run Service Account Display Name"
+  description = "Employee Service Account Display Name"
   type        = string
   default     = "Employee Service Account"
 }
 
-# =====================================================
-# Product Cloud Run
-# =====================================================
+# -------------------------------------------------------
+# Product Service
+# -------------------------------------------------------
 
 variable "product_service_name" {
-  description = "Product Cloud Run service name"
+  description = "Product Cloud Run Service Name"
   type        = string
   default     = "product-service"
 }
 
 variable "product_service_image" {
-  description = "Product Service Docker image"
+  description = "Product Service Docker Image"
   type        = string
 }
 
-# =====================================================
-# Pub/Sub
-# =====================================================
+# -------------------------------------------------------
+# Order Service
+# -------------------------------------------------------
 
-variable "employee_events_topic_name" {
-  description = "Pub/Sub topic for employee events"
+variable "order_service_name" {
+  description = "Order Cloud Run Service Name"
+  type        = string
+  default     = "order-service"
+}
+
+variable "order_service_image" {
+  description = "Order Service Docker Image"
   type        = string
 }
 
-variable "employee_events_subscription_name" {
-  description = "Pub/Sub subscription for employee events"
+# -------------------------------------------------------
+# Payment Service
+# -------------------------------------------------------
+
+variable "payment_service_name" {
+  description = "Payment Cloud Run Service Name"
+  type        = string
+  default     = "payment-service"
+}
+
+variable "payment_service_image" {
+  description = "Payment Service Docker Image"
   type        = string
 }
 
-# =====================================================
-# Notification Cloud Run
-# =====================================================
+# -------------------------------------------------------
+# Notification Service
+# -------------------------------------------------------
 
 variable "notification_service_name" {
-  description = "Notification Cloud Run service name"
+  description = "Notification Cloud Run Service Name"
   type        = string
   default     = "notification-service"
 }
 
 variable "notification_service_image" {
-  description = "Notification Service Docker image"
+  description = "Notification Service Docker Image"
   type        = string
 }
 
+# -------------------------------------------------------
+# SMTP Configuration
+# -------------------------------------------------------
+
 variable "smtp_email" {
-  description = "SMTP sender email"
+  description = "SMTP Email"
   type        = string
 }
 
 variable "smtp_password" {
-  description = "SMTP App Password"
+  description = "SMTP Password"
   type        = string
   sensitive   = true
 }
@@ -164,35 +184,32 @@ variable "smtp_port" {
   default     = "587"
 }
 
-# =====================================================
-# Payment Service
-# =====================================================
+# -------------------------------------------------------
+# Employee Pub/Sub
+# -------------------------------------------------------
 
-variable "payment_service_name" {
-  description = "Payment Cloud Run service name"
-  type        = string
-  default     = "payment-service"
-}
-
-variable "payment_service_image" {
-  description = "Payment Service Docker image"
+variable "employee_events_topic_name" {
+  description = "Employee Events Topic"
   type        = string
 }
 
-# =====================================================
+variable "employee_events_subscription_name" {
+  description = "Employee Events Subscription"
+  type        = string
+}
+
+# -------------------------------------------------------
 # Payment Pub/Sub
-# =====================================================
+# -------------------------------------------------------
 
 variable "payment_events_topic_name" {
-  description = "Pub/Sub topic for payment events"
+  description = "Payment Events Topic"
   type        = string
   default     = "payment-events"
 }
 
 variable "payment_events_subscription_name" {
-
-  description = "Pub/Sub subscription for payment events"
-
-  type = string
-
+  description = "Payment Events Subscription"
+  type        = string
+  default     = "payment-events-sub"
 }

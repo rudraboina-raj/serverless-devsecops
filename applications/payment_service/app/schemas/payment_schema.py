@@ -3,11 +3,7 @@ class PaymentRequest:
     @staticmethod
     def validate(data):
 
-        required_fields = [
-            "order_id",
-            "amount",
-            "payment_method"
-        ]
+        required_fields = ["order_id", "amount", "payment_method"]
 
         for field in required_fields:
 

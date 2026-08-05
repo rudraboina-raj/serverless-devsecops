@@ -20,13 +20,15 @@ def create_payment():
 
     payment = PaymentService.create_payment(db, data)
 
-    return jsonify({
-
-        "message": "Payment completed successfully",
-
-        "payment_id": payment.payment_id
-
-    }), 201
+    return (
+        jsonify(
+            {
+                "message": "Payment completed successfully",
+                "payment_id": payment.payment_id,
+            }
+        ),
+        201,
+    )
 
 
 @payment_bp.route("/payments", methods=["GET"])
@@ -36,19 +38,18 @@ def get_all_payments():
 
     payments = PaymentService.get_all_payments(db)
 
-    return jsonify([{
-
-        "payment_id": p.payment_id,
-
-        "order_id": p.order_id,
-
-        "amount": p.amount,
-
-        "payment_method": p.payment_method,
-
-        "status": p.status
-
-    } for p in payments])
+    return jsonify(
+        [
+            {
+                "payment_id": p.payment_id,
+                "order_id": p.order_id,
+                "amount": p.amount,
+                "payment_method": p.payment_method,
+                "status": p.status,
+            }
+            for p in payments
+        ]
+    )
 
 
 @payment_bp.route("/payments/<payment_id>", methods=["GET"])
@@ -58,19 +59,15 @@ def get_payment(payment_id):
 
     payment = PaymentService.get_payment(db, payment_id)
 
-    return jsonify({
-
-        "payment_id": payment.payment_id,
-
-        "order_id": payment.order_id,
-
-        "amount": payment.amount,
-
-        "payment_method": payment.payment_method,
-
-        "status": payment.status
-
-    })
+    return jsonify(
+        {
+            "payment_id": payment.payment_id,
+            "order_id": payment.order_id,
+            "amount": payment.amount,
+            "payment_method": payment.payment_method,
+            "status": payment.status,
+        }
+    )
 
 
 @payment_bp.route("/payments/<payment_id>", methods=["PUT"])
@@ -80,20 +77,8 @@ def update_payment(payment_id):
 
     db = next(get_db())
 
-    payment = PaymentService.update_payment(
+    payment = PaymentService.update_payment(db, payment_id, data)
 
-        db,
-
-        payment_id,
-
-        data
-
+    return jsonify(
+        {"message": "Payment updated successfully", "status": payment.status}
     )
-
-    return jsonify({
-
-        "message": "Payment updated successfully",
-
-        "status": payment.status
-
-    })

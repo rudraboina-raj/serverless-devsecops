@@ -39,16 +39,16 @@ def get_orders():
 
         for order in orders:
 
-            result.append({
-
-                "order_id": order.order_id,
-                "employee_id": order.employee_id,
-                "product_id": order.product_id,
-                "quantity": order.quantity,
-                "total_price": order.total_price,
-                "status": order.status,
-
-            })
+            result.append(
+                {
+                    "order_id": order.order_id,
+                    "employee_id": order.employee_id,
+                    "product_id": order.product_id,
+                    "quantity": order.quantity,
+                    "total_price": order.total_price,
+                    "status": order.status,
+                }
+            )
 
         return jsonify(result), 200
 
@@ -68,20 +68,21 @@ def get_order(order_id):
 
         if not order:
 
-            return jsonify({
-                "message": "Order not found"
-            }), 404
+            return jsonify({"message": "Order not found"}), 404
 
-        return jsonify({
-
-            "order_id": order.order_id,
-            "employee_id": order.employee_id,
-            "product_id": order.product_id,
-            "quantity": order.quantity,
-            "total_price": order.total_price,
-            "status": order.status,
-
-        }), 200
+        return (
+            jsonify(
+                {
+                    "order_id": order.order_id,
+                    "employee_id": order.employee_id,
+                    "product_id": order.product_id,
+                    "quantity": order.quantity,
+                    "total_price": order.total_price,
+                    "status": order.status,
+                }
+            ),
+            200,
+        )
 
     finally:
 

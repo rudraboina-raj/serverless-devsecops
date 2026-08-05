@@ -15,20 +15,14 @@ class EmployeeRepository:
         return employee
 
     def find_by_email(self, email):
-        return (
-            self.db.query(Employee)
-            .filter(Employee.email == email)
-            .first()
-        )
+        return self.db.query(Employee).filter(Employee.email == email).first()
 
     def find_all(self):
         return self.db.query(Employee).all()
 
     def find_by_employee_id(self, employee_id):
         return (
-            self.db.query(Employee)
-            .filter(Employee.employee_id == employee_id)
-            .first()
+            self.db.query(Employee).filter(Employee.employee_id == employee_id).first()
         )
 
     def update(self, employee):

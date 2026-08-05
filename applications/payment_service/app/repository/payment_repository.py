@@ -24,11 +24,7 @@ class PaymentRepository:
     @staticmethod
     def get_by_id(db: Session, payment_id: str):
 
-        return (
-            db.query(Payment)
-            .filter(Payment.payment_id == payment_id)
-            .first()
-        )
+        return db.query(Payment).filter(Payment.payment_id == payment_id).first()
 
     @staticmethod
     def update(db: Session, payment: Payment):

@@ -45,37 +45,27 @@ def create_product():
             quantity=data["quantity"],
         )
 
-        return jsonify(
-            {
-                "message": "Product created successfully",
-                "product_id": product.product_id,
-            }
-        ), 201
+        return (
+            jsonify(
+                {
+                    "message": "Product created successfully",
+                    "product_id": product.product_id,
+                }
+            ),
+            201,
+        )
 
     except ValidationError as err:
 
-        return jsonify(
-            {
-                "errors": err.messages
-            }
-        ), 400
+        return jsonify({"errors": err.messages}), 400
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 400
+        return jsonify({"error": str(e)}), 400
 
     except Exception as e:
 
-        return jsonify(
-            {
-                "error": "Internal Server Error",
-                "details": str(e)
-            }
-        ), 500
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
     finally:
 
@@ -101,18 +91,11 @@ def get_products():
 
         response_schema = ProductResponseSchema(many=True)
 
-        return jsonify(
-            response_schema.dump(products)
-        ), 200
+        return jsonify(response_schema.dump(products)), 200
 
     except Exception as e:
 
-        return jsonify(
-            {
-                "error": "Internal Server Error",
-                "details": str(e)
-            }
-        ), 500
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
 
     finally:
 
@@ -137,17 +120,11 @@ def get_product(product_id):
 
         response_schema = ProductResponseSchema()
 
-        return jsonify(
-            response_schema.dump(product)
-        ), 200
+        return jsonify(response_schema.dump(product)), 200
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 404
+        return jsonify({"error": str(e)}), 404
 
     finally:
 
@@ -177,20 +154,19 @@ def update_product(product_id):
             quantity=data["quantity"],
         )
 
-        return jsonify(
-            {
-                "message": "Product updated successfully",
-                "product_id": product.product_id,
-            }
-        ), 200
+        return (
+            jsonify(
+                {
+                    "message": "Product updated successfully",
+                    "product_id": product.product_id,
+                }
+            ),
+            200,
+        )
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 404
+        return jsonify({"error": str(e)}), 404
 
     finally:
 
@@ -213,19 +189,11 @@ def delete_product(product_id):
 
         service.delete_product(product_id)
 
-        return jsonify(
-            {
-                "message": "Product deleted successfully"
-            }
-        ), 200
+        return jsonify({"message": "Product deleted successfully"}), 200
 
     except ValueError as e:
 
-        return jsonify(
-            {
-                "error": str(e)
-            }
-        ), 404
+        return jsonify({"error": str(e)}), 404
 
     finally:
 

@@ -17,12 +17,15 @@ logger = logging.getLogger(__name__)
 @app.route("/health", methods=["GET"])
 def health():
 
-    return jsonify(
-        {
-            "service": "notification-service",
-            "status": "UP",
-        }
-    ), 200
+    return (
+        jsonify(
+            {
+                "service": "notification-service",
+                "status": "UP",
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/pubsub", methods=["POST"])
@@ -40,11 +43,7 @@ def pubsub():
 
         if not envelope or "message" not in envelope:
 
-            return jsonify(
-                {
-                    "message": "Invalid Pub/Sub message"
-                }
-            ), 400
+            return jsonify({"message": "Invalid Pub/Sub message"}), 400
 
         pubsub_message = envelope["message"]
 
@@ -52,9 +51,7 @@ def pubsub():
 
         logger.info(f"Encoded Data: {encoded_data}")
 
-        decoded_data = base64.b64decode(
-            encoded_data
-        ).decode("utf-8")
+        decoded_data = base64.b64decode(encoded_data).decode("utf-8")
 
         logger.info(f"Decoded JSON: {decoded_data}")
 
@@ -84,21 +81,13 @@ def pubsub():
 
             logger.warning(f"Unknown event type: {event_type}")
 
-        return jsonify(
-            {
-                "message": "Processed successfully"
-            }
-        ), 200
+        return jsonify({"message": "Processed successfully"}), 200
 
     except Exception as ex:
 
         logger.exception("Notification Service Error")
 
-        return jsonify(
-            {
-                "message": str(ex)
-            }
-        ), 500
+        return jsonify({"message": str(ex)}), 500
 
 
 if __name__ == "__main__":

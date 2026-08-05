@@ -15,21 +15,13 @@ class ProductRepository:
         return product
 
     def find_by_sku(self, sku):
-        return (
-            self.db.query(Product)
-            .filter(Product.sku == sku)
-            .first()
-        )
+        return self.db.query(Product).filter(Product.sku == sku).first()
 
     def find_all(self):
         return self.db.query(Product).all()
 
     def find_by_product_id(self, product_id):
-        return (
-            self.db.query(Product)
-            .filter(Product.product_id == product_id)
-            .first()
-        )
+        return self.db.query(Product).filter(Product.product_id == product_id).first()
 
     def update(self, product):
         self.db.commit()

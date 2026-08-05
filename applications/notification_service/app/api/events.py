@@ -13,14 +13,10 @@ def receive_event():
     envelope = request.get_json()
 
     if not envelope:
-        return {
-            "error": "No Pub/Sub message received."
-        }, 400
+        return {"error": "No Pub/Sub message received."}, 400
 
     if "message" not in envelope:
-        return {
-            "error": "Invalid Pub/Sub message."
-        }, 400
+        return {"error": "Invalid Pub/Sub message."}, 400
 
     pubsub_message = envelope["message"]
 
@@ -37,6 +33,4 @@ def receive_event():
         print(json.dumps(event, indent=4))
         print("=" * 60)
 
-    return {
-        "message": "Event processed successfully."
-    }, 200
+    return {"message": "Event processed successfully."}, 200
