@@ -48,6 +48,8 @@ jobs:
         run: |
           flake8 .
 
-      - name: Build Docker Image
+      - name: Build Employee Service Docker Image
         run: |
-          docker build -t techmart-app:latest .
+          docker build \
+            --build-arg SERVICE_NAME=employee_service \
+            -t employee-service:latest .
