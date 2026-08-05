@@ -41,3 +41,9 @@ Thumbs.db
 # Logs
 # ===============================
 *.log
+
+# Terraform Plan
+terraform/tfplan
+
+# Cloud SQL Proxy
+tools/cloud-sql-proxy.exe
