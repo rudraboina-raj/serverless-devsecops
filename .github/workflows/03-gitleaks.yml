@@ -2,30 +2,40 @@ name: GitLeaks Secret Scan
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
   pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
-  security-events: write
+    branches:
+      - main
 
 jobs:
+
   gitleaks:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      ####################################################
+      # Install GitLeaks
+      ####################################################
+
+      - name: Install GitLeaks
+        run: |
+          wget https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz
+          tar -xzf gitleaks_linux_x64.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+
+      ####################################################
+      # Scan Repository
+      ####################################################
 
       - name: Run GitLeaks
-        uses: gitleaks/gitleaks-action@v2
-
-      - name: Upload GitLeaks SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: results.sarif
+        run: |
+          gitleaks detect \
+            --source . \
+            --verbose \
+            --exit-code 0
