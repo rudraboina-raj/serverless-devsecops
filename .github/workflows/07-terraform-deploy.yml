@@ -11,7 +11,6 @@ env:
   TF_VERSION: "1.12.2"
 
 jobs:
-
   terraform:
 
     runs-on: ubuntu-latest
@@ -23,7 +22,7 @@ jobs:
     steps:
 
       ##################################################
-      # Checkout
+      # Checkout Repository
       ##################################################
 
       - name: Checkout Repository
@@ -43,7 +42,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       ##################################################
-      # DEBUG (KEEP THIS FOR NOW)
+      # Verify Authentication
       ##################################################
 
       - name: Verify Google Authentication
@@ -61,7 +60,7 @@ jobs:
 
           echo ""
           echo "=============================="
-          echo "ACTIVE CONFIG"
+          echo "CURRENT CONFIG"
           echo "=============================="
           gcloud config list
 
@@ -73,6 +72,14 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
+
+      ##################################################
+      # Terraform Debug Logging
+      ##################################################
+
+      - name: Enable Terraform Debug
+        run: |
+          echo "TF_LOG=DEBUG" >> $GITHUB_ENV
 
       ##################################################
       # Terraform Format
@@ -96,21 +103,34 @@ jobs:
         run: terraform validate
 
       ##################################################
+      # Terraform Version
+      ##################################################
+
+      - name: Terraform Version
+        run: terraform version
+
+      ##################################################
       # Terraform Plan
       ##################################################
 
       - name: Terraform Plan
         run: |
+          set -x
+
           terraform plan \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
             -var="smtp_password=${{ secrets.SMTP_PASSWORD }}" \
-            -out=tfplan
+            -out=tfplan \
+            -no-color
+
+          echo "Terraform Exit Code: $?"
 
       ##################################################
       # Upload Plan
       ##################################################
 
       - name: Upload Terraform Plan
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
@@ -130,7 +150,7 @@ jobs:
 
       - name: Success
         run: |
-          echo "========================================"
+          echo "======================================"
           echo "Terraform Deployment Successful"
           echo "Infrastructure Updated"
-          echo "========================================"
+          echo "======================================"
