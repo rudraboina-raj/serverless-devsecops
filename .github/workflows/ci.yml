@@ -69,3 +69,73 @@ jobs:
 
       - name: Run Tests
         run: pytest || true
+
+      # ==========================================
+      # Build Employee Service
+      # ==========================================
+
+      - name: Build Employee Image
+        run: |
+          docker build \
+            --build-arg SERVICE_NAME=employee_service \
+            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/employee-service:latest .
+
+      - name: Push Employee Image
+        run: |
+          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/employee-service:latest
+
+      # ==========================================
+      # Build Product Service
+      # ==========================================
+
+      - name: Build Product Image
+        run: |
+          docker build \
+            --build-arg SERVICE_NAME=product_service \
+            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/product-service:latest .
+
+      - name: Push Product Image
+        run: |
+          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/product-service:latest
+
+      # ==========================================
+      # Build Order Service
+      # ==========================================
+
+      - name: Build Order Image
+        run: |
+          docker build \
+            --build-arg SERVICE_NAME=order_service \
+            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/order-service:latest .
+
+      - name: Push Order Image
+        run: |
+          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/order-service:latest
+
+      # ==========================================
+      # Build Payment Service
+      # ==========================================
+
+      - name: Build Payment Image
+        run: |
+          docker build \
+            --build-arg SERVICE_NAME=payment_service \
+            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/payment-service:latest .
+
+      - name: Push Payment Image
+        run: |
+          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/payment-service:latest
+
+      # ==========================================
+      # Build Notification Service
+      # ==========================================
+
+      - name: Build Notification Image
+        run: |
+          docker build \
+            --build-arg SERVICE_NAME=notification_service \
+            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/notification-service:latest .
+
+      - name: Push Notification Image
+        run: |
+          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/notification-service:latest
