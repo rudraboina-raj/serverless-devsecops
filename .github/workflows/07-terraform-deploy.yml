@@ -9,7 +9,6 @@ permissions:
 
 env:
   TF_VERSION: "1.12.2"
-  TF_WORKING_DIR: terraform
 
 jobs:
 
@@ -23,116 +22,115 @@ jobs:
 
     steps:
 
-    ##################################################
-    # Checkout
-    ##################################################
+      ##################################################
+      # Checkout
+      ##################################################
 
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    ##################################################
-    # Authenticate to Google Cloud
-    ##################################################
+      ##################################################
+      # Authenticate to Google Cloud
+      ##################################################
 
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v2
-      with:
-        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-    - name: Setup gcloud
-      uses: google-github-actions/setup-gcloud@v2
-    ##################################################
-# Verify Authentication
-##################################################
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
 
-- name: Verify Google Authentication
-  run: |
-    echo "========== ACTIVE ACCOUNT =========="
-    gcloud auth list
+      ##################################################
+      # DEBUG (KEEP THIS FOR NOW)
+      ##################################################
 
-    echo "========== CURRENT CONFIG =========="
-    gcloud config list
+      - name: Verify Google Authentication
+        run: |
+          echo "=============================="
+          echo "ACTIVE ACCOUNT"
+          echo "=============================="
+          gcloud auth list
 
-    echo "========== PROJECT =========="
-    gcloud config get-value project
+          echo ""
+          echo "=============================="
+          echo "CURRENT PROJECT"
+          echo "=============================="
+          gcloud config get-value project
 
-    echo "========== ACCESS TOKEN =========="
-    gcloud auth print-access-token | head -c 20
-    ##################################################
-    # Terraform
-    ##################################################
+          echo ""
+          echo "=============================="
+          echo "ACTIVE CONFIG"
+          echo "=============================="
+          gcloud config list
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ env.TF_VERSION }}
+      ##################################################
+      # Setup Terraform
+      ##################################################
 
-    ##################################################
-    # Terraform Format
-    ##################################################
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
 
-    - name: Terraform Format Check
-      run: terraform fmt -check -recursive
-       ##################################################
-    # Verify Authentication
-    ##################################################
+      ##################################################
+      # Terraform Format
+      ##################################################
 
-    - name: Show Active Account
-      run: |
-        gcloud auth list
-        gcloud config list account
-    ##################################################
-    # Terraform Init
-    ##################################################
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
 
-    - name: Terraform Init
-      run: terraform init
+      ##################################################
+      # Terraform Init
+      ##################################################
 
-    ##################################################
-    # Terraform Validate
-    ##################################################
+      - name: Terraform Init
+        run: terraform init
 
-    - name: Terraform Validate
-      run: terraform validate
+      ##################################################
+      # Terraform Validate
+      ##################################################
 
-    ##################################################
-    # Terraform Plan
-    ##################################################
+      - name: Terraform Validate
+        run: terraform validate
 
-    - name: Terraform Plan
-      run: |
-        terraform plan \
-        -var="db_password=${{ secrets.DB_PASSWORD }}" \
-        -var="smtp_password=${{ secrets.SMTP_PASSWORD }}" \
-        -out=tfplan
+      ##################################################
+      # Terraform Plan
+      ##################################################
 
-    ##################################################
-    # Upload Plan
-    ##################################################
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="smtp_password=${{ secrets.SMTP_PASSWORD }}" \
+            -out=tfplan
 
-    - name: Upload Terraform Plan
-      uses: actions/upload-artifact@v4
-      with:
-        name: terraform-plan
-        path: terraform/tfplan
+      ##################################################
+      # Upload Plan
+      ##################################################
 
-    ##################################################
-    # Terraform Apply
-    ##################################################
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: terraform/tfplan
 
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main'
-      run: |
-        terraform apply -auto-approve tfplan
+      ##################################################
+      # Terraform Apply
+      ##################################################
 
-    ##################################################
-    # Success
-    ##################################################
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
 
-    - name: Success
-      run: |
-        echo "========================================"
-        echo "Terraform Deployment Successful"
-        echo "Infrastructure Updated"
-        echo "========================================"
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Terraform Deployment Successful"
+          echo "Infrastructure Updated"
+          echo "========================================"
