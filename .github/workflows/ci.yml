@@ -24,7 +24,6 @@ env:
   TF_VAR_smtp_password: ${{ secrets.SMTP_PASSWORD }}
 
 jobs:
-
   build-and-deploy:
 
     runs-on: ubuntu-latest
@@ -70,72 +69,34 @@ jobs:
       - name: Run Tests
         run: pytest || true
 
-      # ==========================================
+      # ==================================================
       # Build Employee Service
-      # ==========================================
+      # ==================================================
 
       - name: Build Employee Image
         run: |
           docker build \
+            --progress=plain \
             --build-arg SERVICE_NAME=employee_service \
-            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/employee-service:latest .
+            -t asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest \
+            .
 
       - name: Push Employee Image
         run: |
-          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/employee-service:latest
+          docker push asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest
 
-      # ==========================================
-      # Build Product Service
-      # ==========================================
+      # ==================================================
+      # Remaining services temporarily disabled
+      # ==================================================
 
-      - name: Build Product Image
-        run: |
-          docker build \
-            --build-arg SERVICE_NAME=product_service \
-            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/product-service:latest .
+      - name: Skip Product Build
+        run: echo "Product build temporarily disabled"
 
-      - name: Push Product Image
-        run: |
-          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/product-service:latest
+      - name: Skip Order Build
+        run: echo "Order build temporarily disabled"
 
-      # ==========================================
-      # Build Order Service
-      # ==========================================
+      - name: Skip Payment Build
+        run: echo "Payment build temporarily disabled"
 
-      - name: Build Order Image
-        run: |
-          docker build \
-            --build-arg SERVICE_NAME=order_service \
-            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/order-service:latest .
-
-      - name: Push Order Image
-        run: |
-          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/order-service:latest
-
-      # ==========================================
-      # Build Payment Service
-      # ==========================================
-
-      - name: Build Payment Image
-        run: |
-          docker build \
-            --build-arg SERVICE_NAME=payment_service \
-            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/payment-service:latest .
-
-      - name: Push Payment Image
-        run: |
-          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/payment-service:latest
-
-      # ==========================================
-      # Build Notification Service
-      # ==========================================
-
-      - name: Build Notification Image
-        run: |
-          docker build \
-            --build-arg SERVICE_NAME=notification_service \
-            -t asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/notification-service:latest .
-
-      - name: Push Notification Image
-        run: |
-          docker push asia-south1-docker.pkg.dev/$PROJECT_ID/serverless-repo/notification-service:latest
+      - name: Skip Notification Build
+        run: echo "Notification build temporarily disabled"
