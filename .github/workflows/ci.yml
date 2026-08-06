@@ -16,6 +16,7 @@ permissions:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
+  REPOSITORY: serverless-repo
 
 jobs:
   build:
@@ -24,11 +25,15 @@ jobs:
 
     steps:
 
+      ##################################################
+      # Checkout
+      ##################################################
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       ##################################################
-      # Authenticate to GCP
+      # Authenticate to Google Cloud
       ##################################################
 
       - name: Authenticate to Google Cloud
@@ -44,7 +49,7 @@ jobs:
       # Docker
       ##################################################
 
-      - name: Login to Artifact Registry
+      - name: Configure Docker
         run: |
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
 
@@ -65,32 +70,106 @@ jobs:
           python -m pip install --upgrade pip
           pip install black flake8 pytest
 
-      - name: Black
+      ##################################################
+      # Code Quality
+      ##################################################
+
+      - name: Black Formatting Check
         run: black --check .
 
-      - name: Flake8
+      - name: Flake8 Lint
         run: flake8 .
 
-      - name: Tests
+      - name: Run Tests
         run: pytest || true
 
       ##################################################
-      # Build Employee Image
+      # Employee Service
       ##################################################
 
-      - name: Build Employee Image
+      - name: Build Employee Service
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: Dockerfile
           push: true
-          tags: asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/serverless-repo/employee-service:latest
+          tags: |
+            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/employee-service:latest
           build-args: |
             SERVICE_NAME=employee_service
 
       ##################################################
-      # Done
+      # Product Service
+      ##################################################
+
+      - name: Build Product Service
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/product-service:latest
+          build-args: |
+            SERVICE_NAME=product_service
+
+      ##################################################
+      # Order Service
+      ##################################################
+
+      - name: Build Order Service
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/order-service:latest
+          build-args: |
+            SERVICE_NAME=order_service
+
+      ##################################################
+      # Payment Service
+      ##################################################
+
+      - name: Build Payment Service
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/payment-service:latest
+          build-args: |
+            SERVICE_NAME=payment_service
+
+      ##################################################
+      # Notification Service
+      ##################################################
+
+      - name: Build Notification Service
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/notification-service:latest
+          build-args: |
+            SERVICE_NAME=notification_service
+
+      ##################################################
+      # Success
       ##################################################
 
       - name: Success
-        run: echo "Employee image pushed successfully."
+        run: |
+          echo "======================================="
+          echo "All TechMart services built successfully"
+          echo "Employee Service"
+          echo "Product Service"
+          echo "Order Service"
+          echo "Payment Service"
+          echo "Notification Service"
+          echo "Images pushed to Artifact Registry"
+          echo "======================================="
