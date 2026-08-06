@@ -26,7 +26,7 @@ jobs:
     steps:
 
       ##################################################
-      # Checkout
+      # Checkout Repository
       ##################################################
 
       - name: Checkout Repository
@@ -37,33 +37,75 @@ jobs:
       ##################################################
 
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: access_token
+          create_credentials_file: true
+          export_environment_variables: true
+
+      ##################################################
+      # Setup gcloud
+      ##################################################
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       ##################################################
-      # Docker
+      # Verify Authentication
+      ##################################################
+
+      - name: Verify Authentication
+        run: |
+          echo "=============================="
+          echo "ACTIVE ACCOUNT"
+          echo "=============================="
+          gcloud auth list
+
+          echo ""
+          echo "=============================="
+          echo "PROJECT"
+          echo "=============================="
+          gcloud config get-value project
+
+          echo ""
+          echo "=============================="
+          echo "ACCESS TOKEN"
+          echo "=============================="
+          gcloud auth print-access-token | head -c 20
+          echo ""
+
+      ##################################################
+      # Configure Docker
       ##################################################
 
       - name: Configure Docker
         run: |
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
 
+      ##################################################
+      # Setup Docker Buildx
+      ##################################################
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       ##################################################
-      # Python
+      # Setup Python
       ##################################################
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      ##################################################
+      # Install Dependencies
+      ##################################################
 
       - name: Install Dependencies
         run: |
@@ -93,8 +135,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/employee-service:latest
+          tags: asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/employee-service:latest
           build-args: |
             SERVICE_NAME=employee_service
 
@@ -108,8 +149,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/product-service:latest
+          tags: asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/product-service:latest
           build-args: |
             SERVICE_NAME=product_service
 
@@ -123,8 +163,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/order-service:latest
+          tags: asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/order-service:latest
           build-args: |
             SERVICE_NAME=order_service
 
@@ -138,8 +177,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/payment-service:latest
+          tags: asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/payment-service:latest
           build-args: |
             SERVICE_NAME=payment_service
 
@@ -153,8 +191,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: |
-            asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/notification-service:latest
+          tags: asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/notification-service:latest
           build-args: |
             SERVICE_NAME=notification_service
 
