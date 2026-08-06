@@ -1,0 +1,115 @@
+name: Terraform Infrastructure Deployment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: "1.12.2"
+  TF_WORKING_DIR: terraform
+
+jobs:
+
+  terraform:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+
+    ##################################################
+    # Checkout
+    ##################################################
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    ##################################################
+    # Authenticate to Google Cloud
+    ##################################################
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v2
+
+    ##################################################
+    # Terraform
+    ##################################################
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    ##################################################
+    # Terraform Format
+    ##################################################
+
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive
+
+    ##################################################
+    # Terraform Init
+    ##################################################
+
+    - name: Terraform Init
+      run: terraform init
+
+    ##################################################
+    # Terraform Validate
+    ##################################################
+
+    - name: Terraform Validate
+      run: terraform validate
+
+    ##################################################
+    # Terraform Plan
+    ##################################################
+
+    - name: Terraform Plan
+      run: |
+        terraform plan \
+        -var="db_password=${{ secrets.DB_PASSWORD }}" \
+        -var="smtp_password=${{ secrets.SMTP_PASSWORD }}" \
+        -out=tfplan
+
+    ##################################################
+    # Upload Plan
+    ##################################################
+
+    - name: Upload Terraform Plan
+      uses: actions/upload-artifact@v4
+      with:
+        name: terraform-plan
+        path: terraform/tfplan
+
+    ##################################################
+    # Terraform Apply
+    ##################################################
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      run: |
+        terraform apply -auto-approve tfplan
+
+    ##################################################
+    # Success
+    ##################################################
+
+    - name: Success
+      run: |
+        echo "========================================"
+        echo "Terraform Deployment Successful"
+        echo "Infrastructure Updated"
+        echo "========================================"
