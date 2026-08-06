@@ -1,0 +1,124 @@
+name: Application Security Scan
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+
+  security-scan:
+
+    name: Security Scan
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ####################################################
+      # Checkout
+      ####################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ####################################################
+      # Python
+      ####################################################
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      ####################################################
+      # Install Security Tools
+      ####################################################
+
+      - name: Install Security Tools
+        run: |
+          python -m pip install --upgrade pip
+
+          pip install \
+            bandit \
+            safety \
+            pip-audit
+
+      ####################################################
+      # Bandit
+      ####################################################
+
+      - name: Run Bandit
+        run: |
+          mkdir -p reports
+
+          bandit \
+            -r . \
+            -f json \
+            -o reports/bandit-report.json || true
+
+      ####################################################
+      # Safety
+      ####################################################
+
+      - name: Run Safety
+        run: |
+          safety scan \
+            --output json \
+            > reports/safety-report.json || true
+
+      ####################################################
+      # pip-audit
+      ####################################################
+
+      - name: Run pip-audit
+        run: |
+          pip-audit \
+            --format=json \
+            --output=reports/pip-audit.json || true
+
+      ####################################################
+      # GitLeaks
+      ####################################################
+
+      - name: Run GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+
+      ####################################################
+      # Trivy Filesystem Scan
+      ####################################################
+
+      - name: Run Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: reports/trivy-results.sarif
+
+      ####################################################
+      # Upload Trivy SARIF
+      ####################################################
+
+      - name: Upload Trivy Results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/trivy-results.sarif
+
+      ####################################################
+      # Upload Reports
+      ####################################################
+
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: reports/
