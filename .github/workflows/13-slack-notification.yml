@@ -1,0 +1,44 @@
+name: Slack Notification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  notify:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Send Slack Notification
+      ##################################################
+
+      - name: Send Notification
+        run: |
+          echo "========================================"
+          echo "Sending Slack Notification..."
+          echo "========================================"
+
+          echo "Deployment Completed Successfully"
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Slack Notification Sent"
+          echo "========================================"

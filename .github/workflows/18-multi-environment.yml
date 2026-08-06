@@ -1,0 +1,78 @@
+name: Multi Environment Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target Environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Authenticate
+      ##################################################
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      ##################################################
+      # Display Target Environment
+      ##################################################
+
+      - name: Display Environment
+        run: |
+          echo "Deploying to:"
+          echo "${{ github.event.inputs.environment }}"
+
+      ##################################################
+      # Placeholder Deployment
+      ##################################################
+
+      - name: Deploy Application
+        run: |
+          echo "Deploying application to ${{ github.event.inputs.environment }}"
+          echo "Cloud Run deployment would execute here."
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Deployment to ${{ github.event.inputs.environment }} completed."
+          echo "========================================"

@@ -1,0 +1,78 @@
+name: Disaster Recovery
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+
+jobs:
+
+  disaster-recovery:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Authenticate
+      ##################################################
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      ##################################################
+      # Verify Cloud SQL Backups
+      ##################################################
+
+      - name: Verify Cloud SQL Backups
+        run: |
+          echo "Checking Cloud SQL backups..."
+          gcloud sql backups list \
+            --project=$PROJECT_ID || true
+
+      ##################################################
+      # Verify Cloud Run Services
+      ##################################################
+
+      - name: Verify Cloud Run Services
+        run: |
+          gcloud run services list \
+            --region=$REGION
+
+      ##################################################
+      # Verify Artifact Registry
+      ##################################################
+
+      - name: Verify Artifact Registry
+        run: |
+          gcloud artifacts repositories list \
+            --location=$REGION
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Disaster Recovery Verification Complete"
+          echo "========================================"

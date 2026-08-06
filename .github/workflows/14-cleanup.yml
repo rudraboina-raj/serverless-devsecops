@@ -1,0 +1,54 @@
+name: Cleanup Resources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  cleanup:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Cleanup Workspace
+      ##################################################
+
+      - name: Remove Temporary Files
+        run: |
+          echo "Cleaning temporary files..."
+
+          rm -rf .pytest_cache || true
+          rm -rf .terraform || true
+          rm -rf terraform/.terraform || true
+          rm -rf terraform/tfplan || true
+          rm -rf __pycache__ || true
+
+      ##################################################
+      # Docker Cleanup
+      ##################################################
+
+      - name: Cleanup Docker
+        run: |
+          docker system prune -af || true
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Cleanup Completed Successfully"
+          echo "========================================"

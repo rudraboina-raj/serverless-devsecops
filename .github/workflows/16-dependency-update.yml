@@ -1,0 +1,61 @@
+name: Dependency Update Check
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+
+  dependency-update:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Setup Python
+      ##################################################
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      ##################################################
+      # Install pip-review
+      ##################################################
+
+      - name: Install pip-review
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-review
+
+      ##################################################
+      # Check Outdated Packages
+      ##################################################
+
+      - name: Check Dependencies
+        run: |
+          pip-review || true
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Dependency Check Completed"
+          echo "========================================"

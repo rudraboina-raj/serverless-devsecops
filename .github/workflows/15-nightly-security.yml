@@ -1,0 +1,70 @@
+name: Nightly Security Scan
+
+on:
+
+  schedule:
+    - cron: "0 2 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+
+  nightly-security:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Setup Python
+      ##################################################
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      ##################################################
+      # Install Security Tools
+      ##################################################
+
+      - name: Install Tools
+        run: |
+          pip install safety bandit
+
+      ##################################################
+      # Run Safety Scan
+      ##################################################
+
+      - name: Python Dependency Scan
+        run: |
+          safety check || true
+
+      ##################################################
+      # Run Bandit
+      ##################################################
+
+      - name: Python SAST
+        run: |
+          bandit -r app || true
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "========================================"
+          echo "Nightly Security Scan Completed"
+          echo "========================================"

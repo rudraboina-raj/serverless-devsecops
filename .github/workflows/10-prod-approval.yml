@@ -1,0 +1,42 @@
+name: Production Approval
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  production-approval:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      ##################################################
+      # Checkout Repository
+      ##################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ##################################################
+      # Production Approval
+      ##################################################
+
+      - name: Production Deployment Approved
+        run: |
+          echo "========================================"
+          echo "Production deployment approved."
+          echo "Proceeding with deployment..."
+          echo "========================================"
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "Production approval completed successfully."

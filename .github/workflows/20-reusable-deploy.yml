@@ -1,0 +1,86 @@
+name: Reusable Cloud Run Deployment
+
+on:
+
+  workflow_call:
+
+    inputs:
+
+      service-name:
+        required: true
+        type: string
+
+      image-name:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  REGION: asia-south1
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      ##################################################
+      # Checkout
+      ##################################################
+
+      - uses: actions/checkout@v4
+
+      ##################################################
+      # Authenticate
+      ##################################################
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      ##################################################
+      # Setup gcloud
+      ##################################################
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      ##################################################
+      # Deploy to Cloud Run
+      ##################################################
+
+      - name: Deploy Service
+        run: |
+          gcloud run deploy ${{ inputs.service-name }} \
+            --image=asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/serverless-repo/${{ inputs.image-name }}:latest \
+            --region=$REGION \
+            --platform=managed \
+            --allow-unauthenticated \
+            --quiet
+
+      ##################################################
+      # Verify
+      ##################################################
+
+      - name: Verify Deployment
+        run: |
+          gcloud run services describe \
+            ${{ inputs.service-name }} \
+            --region=$REGION
+
+      ##################################################
+      # Success
+      ##################################################
+
+      - name: Success
+        run: |
+          echo "======================================="
+          echo "Reusable Deployment Successful"
+          echo "======================================="
