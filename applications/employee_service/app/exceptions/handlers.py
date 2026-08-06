@@ -15,13 +15,16 @@ def register_error_handlers(app):
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(error):
-        return jsonify({
-            "error": error.name,
-            "details": error.description,
-        }), error.code
+        return (
+            jsonify(
+                {
+                    "error": error.name,
+                    "details": error.description,
+                }
+            ),
+            error.code,
+        )
 
     @app.errorhandler(Exception)
     def handle_exception(error):
-        return jsonify({
-            "error": "Internal Server Error"
-        }), 500
+        return jsonify({"error": "Internal Server Error"}), 500
