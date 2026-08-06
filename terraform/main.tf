@@ -287,33 +287,33 @@ module "notification_cloud_run" {
 
   vpc_connector = module.serverless_vpc_connector.connector_id
 
-# -------------------------------------------------------
-# Normal Environment Variables
-# -------------------------------------------------------
+  # -------------------------------------------------------
+  # Normal Environment Variables
+  # -------------------------------------------------------
 
-environment_variables = {
+  environment_variables = {
 
-  DEBUG = "false"
+    DEBUG = "false"
 
-  PROJECT_ID = var.project_id
+    PROJECT_ID = var.project_id
 
-  PAYMENT_EVENTS_SUBSCRIPTION = var.payment_events_subscription_name
+    PAYMENT_EVENTS_SUBSCRIPTION = var.payment_events_subscription_name
 
-  SMTP_SERVER = var.smtp_server
+    SMTP_SERVER = var.smtp_server
 
-  SMTP_PORT = var.smtp_port
+    SMTP_PORT = var.smtp_port
 
-  SMTP_EMAIL = var.smtp_email
+    SMTP_EMAIL = var.smtp_email
 
-  SMTP_PASSWORD = var.smtp_password
+    SMTP_PASSWORD = var.smtp_password
 
-}
+  }
 
-# -------------------------------------------------------
-# Secret Manager Environment Variables
-# -------------------------------------------------------
+  # -------------------------------------------------------
+  # Secret Manager Environment Variables
+  # -------------------------------------------------------
 
-secret_environment_variables = {}
+  secret_environment_variables = {}
 
   depends_on = [
     module.project_services,

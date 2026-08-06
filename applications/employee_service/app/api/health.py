@@ -1,16 +1,27 @@
-from flask import Blueprint
-
-from shared.core.settings import Settings
-
-health_bp = Blueprint("health", __name__)
+from flask import jsonify
+from marshmallow import ValidationError
+from werkzeug.exceptions import HTTPException
 
 
-@health_bp.route("/health", methods=["GET"])
-def health():
+def register_error_handlers(app):
 
-    return {
-        "project": Settings.PROJECT_NAME,
-        "service": "employee-service",
-        "status": "UP",
-        "version": Settings.APP_VERSION,
-    }, 200
+    @app.errorhandler(ValidationError)
+    def handle_validation_error(error):
+        return jsonify({"errors": error.messages}), 400
+
+    @app.errorhandler(ValueError)
+    def handle_value_error(error):
+        return jsonify({"error": str(error)}), 400
+
+    @app.errorhandler(HTTPException)
+    def handle_http_exception(error):
+        return jsonify({
+            "error": error.name,
+            "details": error.description
+        }), error.code
+
+    @app.errorhandler(Exception)
+    def handle_exception(error):
+        return jsonify({
+            "error": "Internal Server Error"
+        }), 500

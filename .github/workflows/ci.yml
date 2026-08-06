@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
@@ -15,23 +16,20 @@ permissions:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
-  GAR_LOCATION: asia-south1
-  GAR_REPOSITORY: serverless-repo
-
-  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
-  TF_VAR_smtp_password: ${{ secrets.SMTP_PASSWORD }}
 
 jobs:
-  build-and-deploy:
+  build:
+
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      ##################################################
+      # Authenticate to GCP
+      ##################################################
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -39,49 +37,60 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: Setup Google Cloud SDK
+      - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Configure Docker Authentication
+      ##################################################
+      # Docker
+      ##################################################
+
+      - name: Login to Artifact Registry
         run: |
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      ##################################################
+      # Python
+      ##################################################
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install CI Tools
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install black flake8 pytest
 
-      - name: Check Formatting
+      - name: Black
         run: black --check .
 
-      - name: Run Flake8
+      - name: Flake8
         run: flake8 .
 
-      - name: Run Tests
+      - name: Tests
         run: pytest || true
 
-      - name: Debug Runner
-        run: |
-          pwd
-          ls -la
-          docker version
-          docker buildx version
-          test -f Dockerfile && echo "Dockerfile Found"
+      ##################################################
+      # Build Employee Image
+      ##################################################
 
       - name: Build Employee Image
-        run: docker build --progress=plain --build-arg SERVICE_NAME=employee_service -t asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/serverless-repo/employee-service:latest
+          build-args: |
+            SERVICE_NAME=employee_service
 
-      - name: Push Employee Image
-        run: docker push asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest
+      ##################################################
+      # Done
+      ##################################################
 
-      - name: Skip Remaining Services
-        run: |
-          echo "Product build skipped"
-          echo "Order build skipped"
-          echo "Payment build skipped"
-          echo "Notification build skipped"
+      - name: Success
+        run: echo "Employee image pushed successfully."

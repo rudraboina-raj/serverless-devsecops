@@ -43,7 +43,7 @@ db_username = "appuser"
 
 employee_service_name = "employee-service"
 
-employee_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/employee-service:latest"
+employee_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/employee-service:v3"
 
 employee_service_account_id = "employee-service-sa"
 
@@ -55,7 +55,7 @@ employee_service_account_name = "Employee Service Account"
 
 product_service_name = "product-service"
 
-product_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/product-service:latest"
+product_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/product-service:v2"
 
 # -------------------------------------------------------
 # Cloud Run - Order Service
@@ -63,7 +63,7 @@ product_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverl
 
 order_service_name = "order-service"
 
-order_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/order-service:latest"
+order_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/order-service:v1"
 
 # -------------------------------------------------------
 # Cloud Run - Payment Service
@@ -71,7 +71,7 @@ order_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverles
 
 payment_service_name = "payment-service"
 
-payment_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/payment-service:latest"
+payment_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/payment-service:v2"
 
 # -------------------------------------------------------
 # Cloud Run - Notification Service
@@ -79,7 +79,7 @@ payment_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverl
 
 notification_service_name = "notification-service"
 
-notification_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/notification-service:latest"
+notification_service_image = "asia-south1-docker.pkg.dev/serverless-devsecops/serverless-repo/notification-service:v11"
 
 smtp_email = "rudraboina0435@gmail.com"
 

@@ -38,11 +38,13 @@ class ProductRequestSchema(Schema):
 
 class ProductResponseSchema(Schema):
 
-    id = fields.Integer()
+    product_id = fields.String()
 
     product_name = fields.String()
 
-    description = fields.String()
+    description = fields.String(
+        allow_none=True,
+    )
 
     category = fields.String()
 
@@ -51,3 +53,7 @@ class ProductResponseSchema(Schema):
     price = fields.Float()
 
     quantity = fields.Integer()
+
+    created_at = fields.DateTime()
+
+    updated_at = fields.DateTime()
