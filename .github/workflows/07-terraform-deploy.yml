@@ -42,7 +42,23 @@ jobs:
 
     - name: Setup gcloud
       uses: google-github-actions/setup-gcloud@v2
+    ##################################################
+# Verify Authentication
+##################################################
 
+- name: Verify Google Authentication
+  run: |
+    echo "========== ACTIVE ACCOUNT =========="
+    gcloud auth list
+
+    echo "========== CURRENT CONFIG =========="
+    gcloud config list
+
+    echo "========== PROJECT =========="
+    gcloud config get-value project
+
+    echo "========== ACCESS TOKEN =========="
+    gcloud auth print-access-token | head -c 20
     ##################################################
     # Terraform
     ##################################################
@@ -58,7 +74,14 @@ jobs:
 
     - name: Terraform Format Check
       run: terraform fmt -check -recursive
+       ##################################################
+    # Verify Authentication
+    ##################################################
 
+    - name: Show Active Account
+      run: |
+        gcloud auth list
+        gcloud config list account
     ##################################################
     # Terraform Init
     ##################################################
