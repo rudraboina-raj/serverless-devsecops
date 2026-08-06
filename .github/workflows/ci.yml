@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
   pull_request:
     branches:
       - main
@@ -16,7 +15,6 @@ permissions:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
-
   GAR_LOCATION: asia-south1
   GAR_REPOSITORY: serverless-repo
 
@@ -25,7 +23,6 @@ env:
 
 jobs:
   build-and-deploy:
-
     runs-on: ubuntu-latest
 
     defaults:
@@ -33,7 +30,6 @@ jobs:
         shell: bash
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -69,34 +65,23 @@ jobs:
       - name: Run Tests
         run: pytest || true
 
-      # ==================================================
-      # Build Employee Service
-      # ==================================================
+      - name: Debug Runner
+        run: |
+          pwd
+          ls -la
+          docker version
+          docker buildx version
+          test -f Dockerfile && echo "Dockerfile Found"
 
       - name: Build Employee Image
-        run: |
-          docker build \
-            --progress=plain \
-            --build-arg SERVICE_NAME=employee_service \
-            -t asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest \
-            .
+        run: docker build --progress=plain --build-arg SERVICE_NAME=employee_service -t asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest .
 
       - name: Push Employee Image
+        run: docker push asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest
+
+      - name: Skip Remaining Services
         run: |
-          docker push asia-south1-docker.pkg.dev/${{ env.PROJECT_ID }}/serverless-repo/employee-service:latest
-
-      # ==================================================
-      # Remaining services temporarily disabled
-      # ==================================================
-
-      - name: Skip Product Build
-        run: echo "Product build temporarily disabled"
-
-      - name: Skip Order Build
-        run: echo "Order build temporarily disabled"
-
-      - name: Skip Payment Build
-        run: echo "Payment build temporarily disabled"
-
-      - name: Skip Notification Build
-        run: echo "Notification build temporarily disabled"
+          echo "Product build skipped"
+          echo "Order build skipped"
+          echo "Payment build skipped"
+          echo "Notification build skipped"
